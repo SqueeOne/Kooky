@@ -39,5 +39,7 @@ jspm_packages
 .node_repl_history
 .next
 
+dist
+
 # Environment file
 .env
