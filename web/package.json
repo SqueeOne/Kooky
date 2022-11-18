@@ -9,6 +9,9 @@
   },
   "dependencies": {
     "@apollo/client": "^3.7.1",
+    "@fortawesome/fontawesome-svg-core": "^6.2.1",
+    "@fortawesome/free-solid-svg-icons": "^6.2.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "formik": "^2.2.9",
     "graphql": "^16.6.0",
     "next": "latest",
@@ -24,6 +27,7 @@
     "@graphql-codegen/typescript": "^2.8.2",
     "@graphql-codegen/typescript-operations": "^2.5.7",
     "@graphql-codegen/typescript-react-apollo": "^3.3.6",
+    "@headlessui/react": "^1.7.4",
     "@types/node": "^12.20.55",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
