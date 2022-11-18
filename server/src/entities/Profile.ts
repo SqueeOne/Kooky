@@ -5,6 +5,7 @@ import { Field, ObjectType } from "type-graphql";
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   JoinTable,
@@ -12,6 +13,7 @@ import {
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 
 @ObjectType()
@@ -35,4 +37,12 @@ export class Profile extends BaseEntity {
   @ManyToMany(() => Category, (category) => category.profiles)
   @JoinTable()
   categories: Category[];
+
+  @Field(() => String)
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @Field(() => String)
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

@@ -1,5 +1,4 @@
 import { Profile } from "./Profile";
-import { User } from "./User";
 import { Category } from "./Category";
 import { Field, ObjectType } from "type-graphql";
 import {
