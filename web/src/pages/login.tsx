@@ -3,55 +3,58 @@ import { useRouter } from "next/router";
 import React from "react";
 import { InputField } from "../components/InputField";
 import { Wrapper } from "../components/Wrapper";
-import { MeDocument, MeQuery, useRegisterMutation } from "../generated/graphql";
+import {
+  MeDocument,
+  MeQuery,
+  useLoginMutation,
+  useLogoutMutation,
+} from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
 import { withApollo } from "../utils/withApollo";
 
-interface registerProps {}
-
-export const Register: React.FC<registerProps> = ({}) => {
+export const Login: React.FC<{}> = ({}) => {
   const router = useRouter();
-  const [register] = useRegisterMutation();
-
+  const [login] = useLoginMutation();
   return (
     <Wrapper>
       <Formik
-        initialValues={{ email: "", username: "", password: "" }}
+        initialValues={{ usernameOrEmail: "", password: "" }}
         onSubmit={async (values, { setErrors }) => {
-          const response = await register({
-            variables: { options: values },
+          const response = await login({
+            variables: values,
             update: (cache, { data }) => {
               cache.writeQuery<MeQuery>({
                 query: MeDocument,
                 data: {
                   __typename: "Query",
-                  me: data?.register.user,
+                  me: data?.login.user,
                 },
               });
             },
           });
-          if (response.data?.register.errors) {
-            setErrors(toErrorMap(response.data.register.errors));
-          } else if (response.data?.register.user) {
-            router.push("/");
+          if (response.data?.login.errors) {
+            setErrors(toErrorMap(response.data.login.errors));
+          } else if (response.data?.login.user) {
+            if (typeof router.query.next === "string") {
+              router.push(router.query.next);
+            } else {
+              router.push("/");
+            }
           }
         }}
       >
         {({ isSubmitting }) => (
           <Form className="w-full max-w-xs">
             <InputField
-              name="username"
-              placeholder="username"
-              label="Username"
+              name="usernameOrEmail"
+              placeholder="username or email"
+              label="Username or Email"
             />
-            <div className="mt-4">
-              <InputField name="email" placeholder="email" label="Email" />
-            </div>
             <div className="mt-4">
               <InputField
                 name="password"
                 placeholder="password"
-                label="password"
+                label="Password"
                 type="password"
               />
             </div>
@@ -60,7 +63,7 @@ export const Register: React.FC<registerProps> = ({}) => {
                 type="submit"
                 className="mt-4 bg-cyan-900 text-gray-200 rounded-lg font-bold p-3 w-24 text-center hover:bg-cyan-800 hover:text-gray-100 cursor-pointer"
               >
-                register
+                login
               </button>
             </div>
           </Form>
@@ -70,4 +73,4 @@ export const Register: React.FC<registerProps> = ({}) => {
   );
 };
 
-export default withApollo({ ssr: false })(Register);
+export default withApollo({ ssr: false })(Login);
