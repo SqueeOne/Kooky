@@ -20,9 +20,11 @@ export class ProfileResolver {
     return profile;
   }
 
-  @Query(() => Profile)
+  @Query(() => [Profile])
   async profiles(): Promise<Profile[]> {
-    return await AppDataSource.manager.find(Profile);
+    const profiles = await AppDataSource.getRepository(Profile).find();
+
+    return profiles;
   }
 
   @Mutation(() => Profile)
