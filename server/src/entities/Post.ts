@@ -26,7 +26,6 @@ export class Post extends BaseEntity {
   @Column()
   bodyText: string;
 
-  @Field()
   @ManyToMany(() => Category)
   @JoinTable()
   categories: Category[];

@@ -56,36 +56,6 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
           </Menu.Items>
         </Transition>
       </Menu>
-      // <div className="relative">
-      //   <button
-      //     type="button"
-      //     id="menu-button"
-      //     aria-expanded="true"
-      //     aria-haspopup="true"
-      //     onClick={() =>
-      //       visible === "invisible"
-      //         ? setVisible("visible")
-      //         : setVisible("invisible")
-      //     }
-      //   >
-      //     <FontAwesomeIcon icon={faUser} />
-      //   </button>
-      //   <div
-      //     className={`absolute right-0 z-10 ${visible} mt-4 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none py-3 px-6`}
-      //     role="menu"
-      //     aria-orientation="vertical"
-      //     aria-labelledby="menu-button"
-      //   >
-      //     <div className="py-1">
-      //       <NextLink href="/login">
-      //         <div className="mr-2">login</div>
-      //       </NextLink>
-      //       <NextLink href="/register">
-      //         <div>register</div>
-      //       </NextLink>
-      //     </div>
-      //   </div>
-      // </div>
     );
   } else {
     body = (
