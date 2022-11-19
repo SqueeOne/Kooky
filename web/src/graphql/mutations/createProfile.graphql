@@ -1,0 +1,6 @@
+mutation CreateProfile($name: String!) {
+    createProfile(name: $name) {
+        id
+        profileName
+    }
+}
