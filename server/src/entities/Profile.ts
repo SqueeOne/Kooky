@@ -21,20 +21,23 @@ import {
 export class Profile extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @Field()
   @Column()
   profileName: string;
 
-  @OneToMany(() => Post, (post) => post.profile)
+  @OneToMany(() => Post, (post) => post.profile, { nullable: true })
   posts: Post[];
 
+  @Field()
   @OneToOne(() => User)
   @JoinColumn()
   user: User;
 
-  @ManyToMany(() => Category, (category) => category.profiles)
+  @ManyToMany(() => Category, (category) => category.profiles, {
+    nullable: true,
+  })
   @JoinTable()
   categories: Category[];
 

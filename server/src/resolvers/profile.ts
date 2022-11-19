@@ -1,3 +1,4 @@
+import { User } from "./../entities/User";
 import { MyContext } from "./../types";
 import { Profile } from "./../entities/Profile";
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
@@ -10,16 +11,35 @@ export class ProfileResolver {
   // if the profile doesn't exist yet
   @Query(() => Profile, { nullable: true })
   async myProfile(@Ctx() { req }: MyContext): Promise<Profile | null> {
-    try {
-      return AppDataSource.manager.findOne(Profile, {
-        relations: { user: true },
-        where: { user: { id: req.session.userId } },
-      });
-    } catch {
-      return null;
-    }
+    const profile = await AppDataSource.getRepository(Profile)
+      .createQueryBuilder("profile")
+      .leftJoinAndSelect("profile.user", "user")
+      .where("profile.user = :id", { id: req.session.userId })
+      .getOne();
+
+    return profile;
+  }
+
+  @Query(() => Profile)
+  async profiles(): Promise<Profile[]> {
+    return await AppDataSource.manager.find(Profile);
   }
 
   @Mutation(() => Profile)
-  async createProfile(@Arg("name") name: string, @Ctx() { req }: MyContext);
+  async createProfile(
+    @Arg("name") name: string,
+    @Ctx() { req }: MyContext
+  ): Promise<Profile> {
+    const currentUser = await AppDataSource.manager.findOne(User, {
+      where: { id: req.session.userId },
+    });
+    const profile = AppDataSource.manager
+      .create(Profile, {
+        profileName: name,
+        user: { ...currentUser },
+      })
+      .save();
+
+    return profile;
+  }
 }
