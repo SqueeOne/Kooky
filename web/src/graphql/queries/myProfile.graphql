@@ -2,5 +2,8 @@ query MyProfile {
     myProfile {
         id
         profileName
+        about
+        createdAt
+        updatedAt
     }
 }

@@ -31,6 +31,7 @@ export type Mutation = {
 
 
 export type MutationCreateProfileArgs = {
+  about: Scalars['String'];
   name: Scalars['String'];
 };
 
@@ -47,6 +48,7 @@ export type MutationRegisterArgs = {
 
 export type Profile = {
   __typename?: 'Profile';
+  about: Scalars['String'];
   createdAt: Scalars['String'];
   id: Scalars['Float'];
   profileName: Scalars['String'];
@@ -90,10 +92,11 @@ export type RegularUserResponseFragment = { __typename?: 'UserResponse', errors?
 
 export type CreateProfileMutationVariables = Exact<{
   name: Scalars['String'];
+  about: Scalars['String'];
 }>;
 
 
-export type CreateProfileMutation = { __typename?: 'Mutation', createProfile: { __typename?: 'Profile', id: number, profileName: string } };
+export type CreateProfileMutation = { __typename?: 'Mutation', createProfile: { __typename?: 'Profile', id: number, profileName: string, about: string, createdAt: string } };
 
 export type LoginMutationVariables = Exact<{
   usernameOrEmail: Scalars['String'];
@@ -123,7 +126,7 @@ export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: nu
 export type MyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyProfileQuery = { __typename?: 'Query', myProfile?: { __typename?: 'Profile', id: number, profileName: string } | null };
+export type MyProfileQuery = { __typename?: 'Query', myProfile?: { __typename?: 'Profile', id: number, profileName: string, about: string, createdAt: string, updatedAt: string } | null };
 
 export const RegularErrorFragmentDoc = gql`
     fragment RegularError on FieldError {
@@ -149,10 +152,12 @@ export const RegularUserResponseFragmentDoc = gql`
     ${RegularErrorFragmentDoc}
 ${RegularUserFragmentDoc}`;
 export const CreateProfileDocument = gql`
-    mutation CreateProfile($name: String!) {
-  createProfile(name: $name) {
+    mutation CreateProfile($name: String!, $about: String!) {
+  createProfile(name: $name, about: $about) {
     id
     profileName
+    about
+    createdAt
   }
 }
     `;
@@ -172,6 +177,7 @@ export type CreateProfileMutationFn = Apollo.MutationFunction<CreateProfileMutat
  * const [createProfileMutation, { data, loading, error }] = useCreateProfileMutation({
  *   variables: {
  *      name: // value for 'name'
+ *      about: // value for 'about'
  *   },
  * });
  */
@@ -318,6 +324,9 @@ export const MyProfileDocument = gql`
   myProfile {
     id
     profileName
+    about
+    createdAt
+    updatedAt
   }
 }
     `;

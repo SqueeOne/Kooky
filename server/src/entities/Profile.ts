@@ -27,6 +27,10 @@ export class Profile extends BaseEntity {
   @Column()
   profileName: string;
 
+  @Field()
+  @Column({ nullable: true })
+  about: string;
+
   @OneToMany(() => Post, (post) => post.profile, { nullable: true })
   posts: Post[];
 

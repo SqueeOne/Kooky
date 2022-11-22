@@ -1,6 +1,8 @@
-mutation CreateProfile($name: String!) {
-    createProfile(name: $name) {
+mutation CreateProfile($name: String!, $about: String!) {
+    createProfile(name: $name, about: $about) {
         id
         profileName
+        about
+        createdAt
     }
 }

@@ -1,7 +1,15 @@
+import { isAuth } from "./../middleware/isAuth";
 import { User } from "./../entities/User";
 import { MyContext } from "./../types";
 import { Profile } from "./../entities/Profile";
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Ctx,
+  Mutation,
+  Query,
+  Resolver,
+  UseMiddleware,
+} from "type-graphql";
 import AppDataSource from "../DataSource";
 
 @Resolver(Profile)
@@ -28,8 +36,10 @@ export class ProfileResolver {
   }
 
   @Mutation(() => Profile)
+  @UseMiddleware(isAuth)
   async createProfile(
     @Arg("name") name: string,
+    @Arg("about") about: string,
     @Ctx() { req }: MyContext
   ): Promise<Profile> {
     const currentUser = await AppDataSource.manager.findOne(User, {
@@ -38,6 +48,7 @@ export class ProfileResolver {
     const profile = AppDataSource.manager
       .create(Profile, {
         profileName: name,
+        about: about,
         user: { ...currentUser },
       })
       .save();
