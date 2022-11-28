@@ -1,5 +1,7 @@
 import "reflect-metadata";
 import "dotenv-safe/config";
+import { PostResolver } from "./resolvers/post";
+import { CategoryResolver } from "./resolvers/category";
 import { ProfileResolver } from "./resolvers/profile";
 import { COOKIE_NAME, __prod__ } from "./constants";
 import { UserResolver } from "./resolvers/user";
@@ -45,7 +47,12 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, ProfileResolver],
+      resolvers: [
+        UserResolver,
+        ProfileResolver,
+        CategoryResolver,
+        PostResolver,
+      ],
       validate: false,
     }),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground],

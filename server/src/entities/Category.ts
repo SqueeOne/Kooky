@@ -19,6 +19,8 @@ export class Category extends BaseEntity {
   @Column()
   name: string;
 
-  @ManyToMany(() => Profile, (profile) => profile.categories)
+  @ManyToMany(() => Profile, (profile) => profile.categories, {
+    nullable: true,
+  })
   profiles: Profile[];
 }
