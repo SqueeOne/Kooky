@@ -5,5 +5,13 @@ query MyProfile {
         about
         createdAt
         updatedAt
+        categories {
+            id
+            name
+            posts {
+                id
+                title
+            }
+        }
     }
 }

@@ -23,11 +23,11 @@ export class Profile extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field()
-  @Column()
+  @Field({ nullable: true })
+  @Column({ nullable: true })
   profileName: string;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({ nullable: true })
   about: string;
 
@@ -39,11 +39,12 @@ export class Profile extends BaseEntity {
   @JoinColumn()
   user: User;
 
+  @Field(() => [Category], { nullable: true })
   @ManyToMany(() => Category, (category) => category.profiles, {
     nullable: true,
   })
   @JoinTable()
-  categories: Category[];
+  categories?: Category[];
 
   @Field(() => String)
   @CreateDateColumn()

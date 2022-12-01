@@ -1,0 +1,10 @@
+mutation CreatePost($input: PostInput!, $categoryIds: [Int!]!) {
+    createPost(input: $input, categoryIds: $categoryIds) {
+        id
+        title
+        bodyText
+        profile {
+            profileName
+        }
+    }
+}

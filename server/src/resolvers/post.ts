@@ -81,14 +81,15 @@ export class PostResolver {
     const categories = await AppDataSource.manager.find(Category, {
       where: { id: In(categoryIds) },
     });
-    const post = AppDataSource.manager
-      .create(Post, {
-        ...input,
-        profile: { ...profile },
-        categories: { ...categories },
-      })
-      .save();
 
-    return post;
+    categories.forEach((cat) => {
+      console.log(cat.name);
+    });
+
+    return Post.create({
+      ...input,
+      profile: { ...profile },
+      categories: [...categories],
+    }).save();
   }
 }

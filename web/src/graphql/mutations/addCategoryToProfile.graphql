@@ -1,0 +1,5 @@
+mutation AddCategoryToProfile($categoryId: Float!) {
+    addCategoryToProfile(categoryId: $categoryId) {
+        id
+    }
+}

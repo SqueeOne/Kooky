@@ -1,0 +1,11 @@
+query ProfilePosts($profileId: Float!) {
+    profilePosts(profileId: $profileId) {
+        id
+        title
+        bodyText
+        profile {
+            id
+            profileName
+        }
+    }
+}

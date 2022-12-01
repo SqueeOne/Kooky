@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import { CreateProfile } from "../components/CreateProfile";
 import { Layout } from "../components/Layout";
+import { TopCategories } from "../components/TopCategories";
 import { Wrapper } from "../components/Wrapper";
 import { useMeQuery, useMyProfileQuery } from "../generated/graphql";
 import { withApollo } from "../utils/withApollo";
@@ -37,7 +38,16 @@ const Profile: React.FC<{}> = ({}) => {
       </Wrapper>
     );
   }
-  return <Layout>{body}</Layout>;
+  return (
+    <Layout>
+      <div className="flex gap-8">
+        <div className="w-4/5">{body}</div>
+        <div className="w-1/5">
+          <TopCategories />
+        </div>
+      </div>
+    </Layout>
+  );
 };
 
 export default withApollo({ ssr: false })(Profile);

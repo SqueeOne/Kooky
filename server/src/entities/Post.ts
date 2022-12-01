@@ -26,10 +26,12 @@ export class Post extends BaseEntity {
   @Column()
   bodyText: string;
 
+  @Field(() => [Category], { nullable: true })
   @ManyToMany(() => Category)
   @JoinTable()
   categories: Category[];
 
+  @Field(() => Profile)
   @ManyToOne(() => Profile, (profile) => profile.posts)
   profile: Profile;
 }

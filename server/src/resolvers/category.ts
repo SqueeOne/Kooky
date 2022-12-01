@@ -1,9 +1,17 @@
-import { isAuth } from "./../middleware/isAuth";
+import { MyContext } from "./../types";
 import { Profile } from "./../entities/Profile";
+import { isAuth } from "./../middleware/isAuth";
 import AppDataSource from "../DataSource";
 
 import { Category } from "./../entities/Category";
-import { Arg, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
+import {
+  Arg,
+  Ctx,
+  Mutation,
+  Query,
+  Resolver,
+  UseMiddleware,
+} from "type-graphql";
 
 @Resolver(Category)
 export class CategoryResolver {
@@ -15,17 +23,19 @@ export class CategoryResolver {
   }
 
   @Query(() => [Category])
-  async userCategories(
-    @Arg("profileId") profileId: number
-  ): Promise<Category[] | null> {
-    const currentProfile = await AppDataSource.manager.findOne(Profile, {
-      where: { id: profileId },
+  async userCategories(@Ctx() { req }: MyContext) {
+    const profile = await AppDataSource.manager.findOne(Profile, {
+      relations: { user: true },
+      where: { user: { id: req.session.userId } },
     });
 
-    if (currentProfile) {
-      return currentProfile?.categories;
-    }
-    return null;
+    console.log(profile?.id);
+
+    const categories = profile?.categories;
+
+    console.log(categories);
+
+    return categories;
   }
 
   @Mutation(() => Category)

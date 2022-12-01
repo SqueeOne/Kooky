@@ -1,3 +1,4 @@
+import { Category } from "./../entities/Category";
 import { isAuth } from "./../middleware/isAuth";
 import { User } from "./../entities/User";
 import { MyContext } from "./../types";
@@ -5,6 +6,7 @@ import { Profile } from "./../entities/Profile";
 import {
   Arg,
   Ctx,
+  FieldResolver,
   Mutation,
   Query,
   Resolver,
@@ -14,6 +16,23 @@ import AppDataSource from "../DataSource";
 
 @Resolver(Profile)
 export class ProfileResolver {
+  @FieldResolver(() => Profile)
+  profileUser() {
+    return this.myProfile;
+  }
+
+  @FieldResolver(() => [Category], { nullable: true })
+  async profileCategories(@Ctx() { req }: MyContext) {
+    await AppDataSource.getRepository(Profile)
+      .createQueryBuilder("profile")
+      .leftJoinAndSelect("profile.user", "user")
+      .where("profile.user = :id", { id: req.session.userId })
+      .getOne()
+      .then((pro) => {
+        return pro?.categories;
+      });
+  }
+
   // Query to return profile of logged in user,
   // or take the user to the create profile page
   // if the profile doesn't exist yet
@@ -52,6 +71,31 @@ export class ProfileResolver {
         user: { ...currentUser },
       })
       .save();
+
+    return profile;
+  }
+
+  @Mutation(() => Profile)
+  async addCategoryToProfile(
+    @Arg("categoryId") categoryId: number,
+    @Ctx() { req }: MyContext
+  ) {
+    const profile = await AppDataSource.manager.findOne(Profile, {
+      where: { user: { id: req.session.userId } },
+    });
+
+    const categoryToAdd = await AppDataSource.manager.findOne(Category, {
+      where: { id: categoryId },
+    });
+
+    // const data = {categories: [profile?.categories, categoryToAdd]}
+
+    if (profile && categoryToAdd) {
+      await AppDataSource.createQueryBuilder()
+        .relation(Profile, "categories")
+        .of(profile)
+        .add(categoryToAdd);
+    }
 
     return profile;
   }

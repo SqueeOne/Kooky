@@ -15,6 +15,14 @@ export type Scalars = {
   Float: number;
 };
 
+export type Category = {
+  __typename?: 'Category';
+  id: Scalars['Float'];
+  name: Scalars['String'];
+  posts: Array<Post>;
+  profiles: Array<Profile>;
+};
+
 export type FieldError = {
   __typename?: 'FieldError';
   field: Scalars['String'];
@@ -23,10 +31,29 @@ export type FieldError = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addCategoryToProfile: Profile;
+  createCategory: Category;
+  createPost: Post;
   createProfile: Profile;
   login: UserResponse;
   logout: Scalars['Boolean'];
   register: UserResponse;
+};
+
+
+export type MutationAddCategoryToProfileArgs = {
+  categoryId: Scalars['Float'];
+};
+
+
+export type MutationCreateCategoryArgs = {
+  name: Scalars['String'];
+};
+
+
+export type MutationCreatePostArgs = {
+  categoryIds: Array<Scalars['Int']>;
+  input: PostInput;
 };
 
 
@@ -46,21 +73,47 @@ export type MutationRegisterArgs = {
   options: UsernameAndPasswordInput;
 };
 
+export type Post = {
+  __typename?: 'Post';
+  bodyText: Scalars['String'];
+  categories?: Maybe<Array<Category>>;
+  id: Scalars['Float'];
+  profile: Profile;
+  title: Scalars['String'];
+};
+
+export type PostInput = {
+  bodyText: Scalars['String'];
+  title: Scalars['String'];
+};
+
 export type Profile = {
   __typename?: 'Profile';
-  about: Scalars['String'];
+  about?: Maybe<Scalars['String']>;
+  categories?: Maybe<Array<Category>>;
   createdAt: Scalars['String'];
   id: Scalars['Float'];
-  profileName: Scalars['String'];
+  profileCategories?: Maybe<Array<Category>>;
+  profileName?: Maybe<Scalars['String']>;
+  profileUser: Profile;
   updatedAt: Scalars['String'];
   user: User;
 };
 
 export type Query = {
   __typename?: 'Query';
+  allCategories: Array<Category>;
   me?: Maybe<User>;
   myProfile?: Maybe<Profile>;
+  posts: Array<Post>;
+  profilePosts: Array<Post>;
   profiles: Array<Profile>;
+  userCategories: Array<Category>;
+};
+
+
+export type QueryProfilePostsArgs = {
+  profileId: Scalars['Float'];
 };
 
 export type User = {
@@ -90,13 +143,35 @@ export type RegularUserFragment = { __typename?: 'User', id: number, username: s
 
 export type RegularUserResponseFragment = { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null, user?: { __typename?: 'User', id: number, username: string } | null };
 
+export type AddCategoryToProfileMutationVariables = Exact<{
+  categoryId: Scalars['Float'];
+}>;
+
+
+export type AddCategoryToProfileMutation = { __typename?: 'Mutation', addCategoryToProfile: { __typename?: 'Profile', id: number } };
+
+export type CreateCategoryMutationVariables = Exact<{
+  name: Scalars['String'];
+}>;
+
+
+export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory: { __typename?: 'Category', id: number, name: string } };
+
+export type CreatePostMutationVariables = Exact<{
+  input: PostInput;
+  categoryIds: Array<Scalars['Int']> | Scalars['Int'];
+}>;
+
+
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', id: number, title: string, bodyText: string, profile: { __typename?: 'Profile', profileName?: string | null } } };
+
 export type CreateProfileMutationVariables = Exact<{
   name: Scalars['String'];
   about: Scalars['String'];
 }>;
 
 
-export type CreateProfileMutation = { __typename?: 'Mutation', createProfile: { __typename?: 'Profile', id: number, profileName: string, about: string, createdAt: string } };
+export type CreateProfileMutation = { __typename?: 'Mutation', createProfile: { __typename?: 'Profile', id: number, profileName?: string | null, about?: string | null, createdAt: string } };
 
 export type LoginMutationVariables = Exact<{
   usernameOrEmail: Scalars['String'];
@@ -118,6 +193,11 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null, user?: { __typename?: 'User', id: number, username: string } | null } };
 
+export type AllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AllCategoriesQuery = { __typename?: 'Query', allCategories: Array<{ __typename?: 'Category', id: number, name: string }> };
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -126,7 +206,14 @@ export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: nu
 export type MyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyProfileQuery = { __typename?: 'Query', myProfile?: { __typename?: 'Profile', id: number, profileName: string, about: string, createdAt: string, updatedAt: string } | null };
+export type MyProfileQuery = { __typename?: 'Query', myProfile?: { __typename?: 'Profile', id: number, profileName?: string | null, about?: string | null, createdAt: string, updatedAt: string, categories?: Array<{ __typename?: 'Category', id: number, name: string, posts: Array<{ __typename?: 'Post', id: number, title: string }> }> | null } | null };
+
+export type ProfilePostsQueryVariables = Exact<{
+  profileId: Scalars['Float'];
+}>;
+
+
+export type ProfilePostsQuery = { __typename?: 'Query', profilePosts: Array<{ __typename?: 'Post', id: number, title: string, bodyText: string, profile: { __typename?: 'Profile', id: number, profileName?: string | null } }> };
 
 export const RegularErrorFragmentDoc = gql`
     fragment RegularError on FieldError {
@@ -151,6 +238,112 @@ export const RegularUserResponseFragmentDoc = gql`
 }
     ${RegularErrorFragmentDoc}
 ${RegularUserFragmentDoc}`;
+export const AddCategoryToProfileDocument = gql`
+    mutation AddCategoryToProfile($categoryId: Float!) {
+  addCategoryToProfile(categoryId: $categoryId) {
+    id
+  }
+}
+    `;
+export type AddCategoryToProfileMutationFn = Apollo.MutationFunction<AddCategoryToProfileMutation, AddCategoryToProfileMutationVariables>;
+
+/**
+ * __useAddCategoryToProfileMutation__
+ *
+ * To run a mutation, you first call `useAddCategoryToProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddCategoryToProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addCategoryToProfileMutation, { data, loading, error }] = useAddCategoryToProfileMutation({
+ *   variables: {
+ *      categoryId: // value for 'categoryId'
+ *   },
+ * });
+ */
+export function useAddCategoryToProfileMutation(baseOptions?: Apollo.MutationHookOptions<AddCategoryToProfileMutation, AddCategoryToProfileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddCategoryToProfileMutation, AddCategoryToProfileMutationVariables>(AddCategoryToProfileDocument, options);
+      }
+export type AddCategoryToProfileMutationHookResult = ReturnType<typeof useAddCategoryToProfileMutation>;
+export type AddCategoryToProfileMutationResult = Apollo.MutationResult<AddCategoryToProfileMutation>;
+export type AddCategoryToProfileMutationOptions = Apollo.BaseMutationOptions<AddCategoryToProfileMutation, AddCategoryToProfileMutationVariables>;
+export const CreateCategoryDocument = gql`
+    mutation CreateCategory($name: String!) {
+  createCategory(name: $name) {
+    id
+    name
+  }
+}
+    `;
+export type CreateCategoryMutationFn = Apollo.MutationFunction<CreateCategoryMutation, CreateCategoryMutationVariables>;
+
+/**
+ * __useCreateCategoryMutation__
+ *
+ * To run a mutation, you first call `useCreateCategoryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCategoryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCategoryMutation, { data, loading, error }] = useCreateCategoryMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useCreateCategoryMutation(baseOptions?: Apollo.MutationHookOptions<CreateCategoryMutation, CreateCategoryMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateCategoryMutation, CreateCategoryMutationVariables>(CreateCategoryDocument, options);
+      }
+export type CreateCategoryMutationHookResult = ReturnType<typeof useCreateCategoryMutation>;
+export type CreateCategoryMutationResult = Apollo.MutationResult<CreateCategoryMutation>;
+export type CreateCategoryMutationOptions = Apollo.BaseMutationOptions<CreateCategoryMutation, CreateCategoryMutationVariables>;
+export const CreatePostDocument = gql`
+    mutation CreatePost($input: PostInput!, $categoryIds: [Int!]!) {
+  createPost(input: $input, categoryIds: $categoryIds) {
+    id
+    title
+    bodyText
+    profile {
+      profileName
+    }
+  }
+}
+    `;
+export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, CreatePostMutationVariables>;
+
+/**
+ * __useCreatePostMutation__
+ *
+ * To run a mutation, you first call `useCreatePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createPostMutation, { data, loading, error }] = useCreatePostMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *      categoryIds: // value for 'categoryIds'
+ *   },
+ * });
+ */
+export function useCreatePostMutation(baseOptions?: Apollo.MutationHookOptions<CreatePostMutation, CreatePostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument, options);
+      }
+export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutation>;
+export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
+export type CreatePostMutationOptions = Apollo.BaseMutationOptions<CreatePostMutation, CreatePostMutationVariables>;
 export const CreateProfileDocument = gql`
     mutation CreateProfile($name: String!, $about: String!) {
   createProfile(name: $name, about: $about) {
@@ -285,6 +478,41 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const AllCategoriesDocument = gql`
+    query AllCategories {
+  allCategories {
+    id
+    name
+  }
+}
+    `;
+
+/**
+ * __useAllCategoriesQuery__
+ *
+ * To run a query within a React component, call `useAllCategoriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllCategoriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAllCategoriesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAllCategoriesQuery(baseOptions?: Apollo.QueryHookOptions<AllCategoriesQuery, AllCategoriesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AllCategoriesQuery, AllCategoriesQueryVariables>(AllCategoriesDocument, options);
+      }
+export function useAllCategoriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AllCategoriesQuery, AllCategoriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AllCategoriesQuery, AllCategoriesQueryVariables>(AllCategoriesDocument, options);
+        }
+export type AllCategoriesQueryHookResult = ReturnType<typeof useAllCategoriesQuery>;
+export type AllCategoriesLazyQueryHookResult = ReturnType<typeof useAllCategoriesLazyQuery>;
+export type AllCategoriesQueryResult = Apollo.QueryResult<AllCategoriesQuery, AllCategoriesQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {
@@ -327,6 +555,14 @@ export const MyProfileDocument = gql`
     about
     createdAt
     updatedAt
+    categories {
+      id
+      name
+      posts {
+        id
+        title
+      }
+    }
   }
 }
     `;
@@ -357,3 +593,44 @@ export function useMyProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type MyProfileQueryHookResult = ReturnType<typeof useMyProfileQuery>;
 export type MyProfileLazyQueryHookResult = ReturnType<typeof useMyProfileLazyQuery>;
 export type MyProfileQueryResult = Apollo.QueryResult<MyProfileQuery, MyProfileQueryVariables>;
+export const ProfilePostsDocument = gql`
+    query ProfilePosts($profileId: Float!) {
+  profilePosts(profileId: $profileId) {
+    id
+    title
+    bodyText
+    profile {
+      id
+      profileName
+    }
+  }
+}
+    `;
+
+/**
+ * __useProfilePostsQuery__
+ *
+ * To run a query within a React component, call `useProfilePostsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useProfilePostsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useProfilePostsQuery({
+ *   variables: {
+ *      profileId: // value for 'profileId'
+ *   },
+ * });
+ */
+export function useProfilePostsQuery(baseOptions: Apollo.QueryHookOptions<ProfilePostsQuery, ProfilePostsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ProfilePostsQuery, ProfilePostsQueryVariables>(ProfilePostsDocument, options);
+      }
+export function useProfilePostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ProfilePostsQuery, ProfilePostsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ProfilePostsQuery, ProfilePostsQueryVariables>(ProfilePostsDocument, options);
+        }
+export type ProfilePostsQueryHookResult = ReturnType<typeof useProfilePostsQuery>;
+export type ProfilePostsLazyQueryHookResult = ReturnType<typeof useProfilePostsLazyQuery>;
+export type ProfilePostsQueryResult = Apollo.QueryResult<ProfilePostsQuery, ProfilePostsQueryVariables>;

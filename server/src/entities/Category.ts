@@ -1,3 +1,4 @@
+import { Post } from "./Post";
 import { Profile } from "./Profile";
 import { Field, ObjectType } from "type-graphql";
 import {
@@ -19,8 +20,15 @@ export class Category extends BaseEntity {
   @Column()
   name: string;
 
+  @Field(() => [Profile])
   @ManyToMany(() => Profile, (profile) => profile.categories, {
     nullable: true,
   })
   profiles: Profile[];
+
+  @Field(() => [Post])
+  @ManyToMany(() => Post, (post) => post.categories, {
+    nullable: true,
+  })
+  posts: Post[];
 }
